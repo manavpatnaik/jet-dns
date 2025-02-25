@@ -1,17 +1,12 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
 
 public class Main {
-
-    private static void setPacketId(byte[] response, int id) {
-        response[0] = (byte) ((id >> 8) & 0xFF);
-        response[1] = (byte) (id & 0xFF);
-    }
-
-    private static void setQR(byte[] response) {
-        response[2] |= (byte) (1 << 7);
-    }
 
   public static void main(String[] args){
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -26,10 +21,8 @@ public class Main {
          serverSocket.receive(packet);
          System.out.println("Received data");
 
-         final byte[] bufResponse = new byte[512];
-         setPacketId(bufResponse, 1234);
-         setQR(bufResponse);
-
+        DnsMessage message = new DnsMessage();
+         final byte[] bufResponse = message.getMessage();
          final DatagramPacket packetResponse = new DatagramPacket(bufResponse, bufResponse.length, packet.getSocketAddress());
          serverSocket.send(packetResponse);
        }
