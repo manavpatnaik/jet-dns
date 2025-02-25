@@ -3,6 +3,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
@@ -12,8 +13,6 @@ public class Main {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     System.out.println("Logs from your program will appear here!");
 
-    // Uncomment this block to pass the first stage
-    //
      try(DatagramSocket serverSocket = new DatagramSocket(2053)) {
        while(true) {
          final byte[] buf = new byte[512];
@@ -21,7 +20,8 @@ public class Main {
          serverSocket.receive(packet);
          System.out.println("Received data");
 
-        DnsMessage message = new DnsMessage();
+         Parser parser = new Parser();
+        DnsMessage message = parser.parse(packet);
          final byte[] bufResponse = message.getMessage();
          final DatagramPacket packetResponse = new DatagramPacket(bufResponse, bufResponse.length, packet.getSocketAddress());
          serverSocket.send(packetResponse);
