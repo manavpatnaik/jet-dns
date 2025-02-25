@@ -18,7 +18,7 @@ public class DnsHeader {
     public DnsHeader(short id, short flags, short qdcount, short ancount, short nscount, short arcount) {
         this.ID = id;
         this.QDCOUNT = qdcount;
-        this.ANCOUNT = 1;
+        this.ANCOUNT = qdcount;
         this.NSCOUNT = nscount;
         this.ARCOUNT = arcount;
         extractFlags(flags);
@@ -36,7 +36,7 @@ public class DnsHeader {
         this.AA = false;
         this.TC = false;
         this.RD = (firstHalf&1) != 0;
-        System.out.println("Extracted flags: " + QR + " " + OPCODE + " " + AA + " " + TC + " " + RD);
+//        System.out.println("Extracted flags: " + QR + " " + OPCODE + " " + AA + " " + TC + " " + RD);
     }
 
     private byte[] getFlags() {
@@ -59,5 +59,9 @@ public class DnsHeader {
                 .putShort(NSCOUNT)
                 .putShort(ARCOUNT)
                 .array();
+    }
+
+    public short getQDCOUNT() {
+        return QDCOUNT;
     }
 }

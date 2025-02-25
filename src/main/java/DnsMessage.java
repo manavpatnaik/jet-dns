@@ -1,23 +1,27 @@
 import java.io.ByteArrayOutputStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 public class DnsMessage {
     private DnsHeader header;
-    private DnsQuestion question;
-    private DnsAnswer answer;
+    private List<DnsQuestion> questions;
+    private List<DnsAnswer> answers;
 
-    public DnsMessage(DnsHeader header, DnsQuestion question, DnsAnswer answer) {
+    public DnsMessage(DnsHeader header, List<DnsQuestion> questions, List<DnsAnswer> answers) {
         this.header = header;
-        this.question = question;
-        this.answer = answer;
+        this.questions = questions;
+        this.answers = answers;
     }
 
     public byte[] getMessage() {
-        return ByteBuffer.allocate(512)
-                .put(header.getHeader())
-                .put(question.getQuestion())
-                .put(answer.getAnswer())
-                .array();
+        ByteBuffer buffer = ByteBuffer.allocate(512)
+                .put(header.getHeader());
+        for (DnsQuestion question : questions)
+            buffer.put(question.getQuestion());
+        for (DnsAnswer answer : answers)
+            buffer.put(answer.getAnswer());
+        return buffer.array();
     }
 
 }

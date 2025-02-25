@@ -10,6 +10,7 @@ public class DnsAnswer {
     private short RDLENGTH;
     private String question;
     private String answer;
+    private int length;
 
     public DnsAnswer(String question, short QTYPE, short QCLASS, int TTL, short RDLENGTH) {
         this.question = question;
@@ -28,7 +29,12 @@ public class DnsAnswer {
         buffer.putInt(TTL);
         buffer.putShort(RDLENGTH);
         buffer.put(encodeIpAddress(answer));
+        this.length = buffer.position();
         return Arrays.copyOf(buffer.array(), buffer.position());
+    }
+
+    public int getAnswerLength() {
+        return length;
     }
 
     private byte[] encodeIpAddress(String s) {
