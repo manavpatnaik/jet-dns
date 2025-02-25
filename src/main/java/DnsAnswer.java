@@ -15,8 +15,8 @@ public class DnsAnswer {
         this.question = question;
         this.QTYPE = QTYPE;
         this.QCLASS = QCLASS;
-        this.TTL = TTL;
-        this.RDLENGTH = RDLENGTH;
+        this.TTL = 60;
+        this.RDLENGTH = 4;
         this.answer = "8.8.8.8";
     }
 
