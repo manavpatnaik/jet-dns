@@ -29,6 +29,10 @@ public class DnsQuestion {
         return this.length;
     }
 
+    public String toString() {
+        return "Question : " + question + ", " + QTYPE + ", " + QCLASS;
+    }
+
     private byte[] encodeDomainName(String s) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (String label : s.split("\\.")) {

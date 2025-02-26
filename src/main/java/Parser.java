@@ -2,7 +2,6 @@ import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -53,16 +52,42 @@ public class Parser {
         }
         short QTYPE = buffer.getShort();
         short QCLASS = buffer.getShort();
+
         DnsQuestion question = new DnsQuestion(labelBuilder.toString(), QTYPE, QCLASS);
+
         domainMap.put(currPos, labelBuilder.toString());
-        System.out.println(domainMap);
-        currPos += question.getQuestionLength();
+        currPos = buffer.position();
         return question;
     }
 
     private DnsAnswer parseAnswer(byte[] data) {
         ByteBuffer buffer = ByteBuffer.wrap(data);
         buffer.position(currPos);
+        String domainName = parseDomainName(buffer);
+        short QTYPE = buffer.getShort();
+        short QCLASS = buffer.getShort();
+        int TTL = buffer.getInt();
+        short RDLENGTH = buffer.getShort();
+
+        byte[] rdata = new byte[RDLENGTH];
+        int ipPos = buffer.position();
+        buffer.get(rdata);
+
+        String rdataStr;
+        if (QTYPE == 1 && RDLENGTH == 4) { // A Record (IPv4)
+            rdataStr = String.format("%d.%d.%d.%d", rdata[0] & 0xFF, rdata[1] & 0xFF, rdata[2] & 0xFF, rdata[3] & 0xFF);
+        } else {
+            rdataStr = new String(rdata, StandardCharsets.UTF_8); // Keep this for other record types
+        }
+
+
+        DnsAnswer answer = new DnsAnswer(domainName, QTYPE, QCLASS, TTL, RDLENGTH, rdataStr);
+
+        currPos = buffer.position(); // Update position
+        return answer;
+    }
+
+    private String parseDomainName(ByteBuffer buffer) {
         int labelLength = buffer.get();
         StringBuilder labelBuilder = new StringBuilder();
         while (labelLength > 0) {
@@ -71,12 +96,10 @@ public class Parser {
             labelLength = buffer.get();
             if (labelLength > 0) labelBuilder.append(".");
         }
-        short QTYPE = buffer.getShort();
-        short QCLASS = buffer.getShort();
-        int TTL = buffer.getInt();
-        short RDLENGTH = buffer.getShort();
-        DnsAnswer answer = new DnsAnswer(labelBuilder.toString(), QTYPE, QCLASS, TTL, RDLENGTH);
-        currPos += answer.getAnswerLength();
-        return answer;
+        return labelBuilder.toString();
     }
 }
+
+
+// 00110011.00110001.00110001.00110011
+// 00011111.00001101.01000001.00100100

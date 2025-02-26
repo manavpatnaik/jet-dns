@@ -12,13 +12,13 @@ public class DnsAnswer {
     private String answer;
     private int length;
 
-    public DnsAnswer(String question, short QTYPE, short QCLASS, int TTL, short RDLENGTH) {
+    public DnsAnswer(String question, short QTYPE, short QCLASS, int TTL, short RDLENGTH, String answer) {
         this.question = question;
         this.QTYPE = QTYPE;
         this.QCLASS = QCLASS;
         this.TTL = 60;
-        this.RDLENGTH = 4;
-        this.answer = "8.8.8.8";
+        this.RDLENGTH = RDLENGTH;
+        this.answer = answer;
     }
 
     public byte[] getAnswer() {
@@ -37,10 +37,15 @@ public class DnsAnswer {
         return length;
     }
 
+    public String toString() {
+        return "Answer: " + question + ", " + QTYPE + ", " + QCLASS + ", " + answer;
+    }
+
     private byte[] encodeIpAddress(String s) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+        if (s.length() == 0) return out.toByteArray();
         for (String octet : s.split("\\.")) {
-            out.writeBytes(octet.getBytes());
+            out.write(Integer.parseInt(octet));
         }
         return out.toByteArray();
     }
