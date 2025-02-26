@@ -13,8 +13,8 @@ import java.util.List;
 public class Main {
 
   private static SocketAddress getResolver(String[] args) {
-    if (args.length > 1) {
-      String[] resolverPair = args[1].split(":");
+    if (args.length > 0) {
+      String[] resolverPair = args[0].split(":");
       String resolverIp = resolverPair[0];
       int resolverPort = Integer.parseInt(resolverPair[1]);
       return new InetSocketAddress(resolverIp, resolverPort);
@@ -27,6 +27,7 @@ public class Main {
     System.out.println("Logs from your program will appear here!");
 
     SocketAddress resolver = getResolver(args);
+    System.out.println("Resolver: " + resolver);
 
     try(DatagramSocket serverSocket = new DatagramSocket(2053)) {
       while(true) {
@@ -36,6 +37,8 @@ public class Main {
 
         Parser parser = new Parser();
         DnsMessage request = parser.parse(packet);
+
+        System.out.println("Original request: " + request);
 
         // Extract questions and send individual questions to resolver
 

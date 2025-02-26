@@ -110,4 +110,8 @@ public class DnsHeader {
                 "\nNSCOUNT: " + NSCOUNT +
                 "\nARCOUNT: " + ARCOUNT;
     }
+
+    public byte getQR() {
+        return this.QR;
+    }
 }

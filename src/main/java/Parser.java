@@ -67,11 +67,14 @@ public class Parser {
         short QTYPE = buffer.getShort();
         short QCLASS = buffer.getShort();
         int TTL = buffer.getInt();
-        short RDLENGTH = buffer.getShort();
+        short RDLENGTH = (short) (buffer.getShort() & 0xFFFF); // Ensure unsigned value
 
-        byte[] rdata = new byte[RDLENGTH];
-        int ipPos = buffer.position();
+        if (RDLENGTH < 0 || RDLENGTH > 512) {  // Check for unreasonable values
+            throw new IllegalArgumentException("Invalid RDLENGTH: " + RDLENGTH);
+        }
+        byte[] rdata = new byte[RDLENGTH];  // This is where NegativeArraySizeException occurs
         buffer.get(rdata);
+
 
         String rdataStr;
         if (QTYPE == 1 && RDLENGTH == 4) { // A Record (IPv4)
@@ -79,7 +82,6 @@ public class Parser {
         } else {
             rdataStr = new String(rdata, StandardCharsets.UTF_8); // Keep this for other record types
         }
-
 
         DnsAnswer answer = new DnsAnswer(domainName, QTYPE, QCLASS, TTL, RDLENGTH, rdataStr);
 
