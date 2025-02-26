@@ -14,6 +14,7 @@ public class Main {
 
   private static SocketAddress getResolver(String[] args) {
     if (args.length > 0) {
+      System.out.println();
       String[] resolverPair = args[0].split(":");
       String resolverIp = resolverPair[0];
       int resolverPort = Integer.parseInt(resolverPair[1]);
